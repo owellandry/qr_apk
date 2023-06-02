@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Escáner QR</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     #qrScanner {
       width: 300px;
@@ -25,21 +23,24 @@
   <div id="qrScanner"></div>
 
   <script>
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
     const scanButton = document.getElementById('scanButton');
     const qrScanner = document.getElementById('qrScanner');
 
     scanButton.addEventListener('click', () => {
+      // Verificar si el navegador soporta la API de cámara
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true })
+        // Abrir la cámara
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
           .then(stream => {
             qrScanner.innerHTML = '<video id="video" width="100%" height="100%" autoplay></video>';
             const video = document.getElementById('video');
             video.srcObject = stream;
 
+            // Crear un objeto de detección de códigos QR
             const qrCodeScanner = new window.QRCodeScanner(video, result => {
+              // Manejar el resultado del escaneo del código QR
               alert('Código QR detectado: ' + result);
+              // Detener la cámara
               video.srcObject.getTracks()[0].stop();
               qrScanner.innerHTML = '';
             });
