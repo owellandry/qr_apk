@@ -32,7 +32,11 @@
 
     scanButton.addEventListener('click', () => {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true })
+        const constraints = {
+          video: { facingMode: { exact: "environment" } } // Accede a la cámara trasera
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints)
           .then(stream => {
             qrScanner.innerHTML = '<video id="video" width="100%" height="100%" autoplay></video>';
             const video = document.getElementById('video');
