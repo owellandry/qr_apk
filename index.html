@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Escáner QR</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    #qrScanner {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+    }
+    #scanButton {
+      display: block;
+      width: 100px;
+      height: 30px;
+      margin: 10px auto;
+    }
+  </style>
+</head>
+<body>
+  <button id="scanButton">Escanear QR</button>
+  <div id="qrScanner"></div>
+
+  <script>
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+    const scanButton = document.getElementById('scanButton');
+    const qrScanner = document.getElementById('qrScanner');
+
+    scanButton.addEventListener('click', () => {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(stream => {
+            qrScanner.innerHTML = '<video id="video" width="100%" height="100%" autoplay></video>';
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+
+            const qrCodeScanner = new window.QRCodeScanner(video, result => {
+              alert('Código QR detectado: ' + result);
+              video.srcObject.getTracks()[0].stop();
+              qrScanner.innerHTML = '';
+            });
+            qrCodeScanner.start();
+          })
+          .catch(error => {
+            console.error('Error al acceder a la cámara:', error);
+          });
+      } else {
+        alert('El navegador no soporta la API de cámara.');
+      }
+    });
+  </script>
+</body>
+</html>
